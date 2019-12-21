@@ -1,0 +1,22 @@
+{
+  "description": "Awesome Sync",
+  "manifest_version": 2,
+  "name": "Awesome",
+  "version": "0.1",
+  "icons": { "48": "blue_arrow_48.png" },
+
+  "permissions": [
+    "activeTab",
+    "webRequest",
+    "*://www.orbitry.com/*"
+  ],
+
+  "browser_action": {
+    "default_icon": "blue_arrow_32.png",
+    "default_title": "Awesome Sync"
+  },
+
+  "background": {
+    "scripts": ["background.js"]
+  }
+}
