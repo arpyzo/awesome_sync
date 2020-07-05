@@ -17,7 +17,7 @@ async function handleClick() {
     const rootTitle = "Linux"; // "Bookmarks Menu";
 
 
-    function setDeviceName(result) {
+    /*function setDeviceName(result) {
         let dname = result.deviceName || 'default';
         console.log(`Device name: ${dname}`);
     }
@@ -25,7 +25,19 @@ async function handleClick() {
     function onError(error) {
         console.log(`Error loading device name from storage: ${error}`);
     }
-    browser.storage.local.get("deviceName").then(setDeviceName, onError);
+    browser.storage.local.get("deviceName").then(setDeviceName, onError);*/
+
+    try {
+        //const result = await browser.storage.local.get("deviceName");
+        //const dname = result.deviceName || 'default';
+        const dname = (await browser.storage.local.get("deviceName")).deviceName;
+        console.log(`Device N: ${dname}`);
+    } catch (err) {
+        // TODO: change this to a notification
+        console.error("Error getting settings from local storage:", err);
+        return;
+    }
+
 return;
     let bookmarks = [];
     try {
