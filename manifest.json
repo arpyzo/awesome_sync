@@ -6,7 +6,12 @@
   "version": "0.2",
   "icons": { "48": "blue_arrow_48.png" },
 
+  "options_ui": {
+    "page": "settings.html"
+  },
+
   "permissions": [
+    "storage",
     "bookmarks",
     "webRequest",
     "*://www.orbitry.com/*"
@@ -19,5 +24,11 @@
 
   "background": {
     "scripts": ["background.js"]
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "awesome_sync@orbitry.com"
+    }
   }
 }

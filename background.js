@@ -1,5 +1,5 @@
 function getBookmarkTree(bookmarkNode) {
-    var bookmarks = [];
+    let bookmarks = [];
 
     for (child of bookmarkNode.children) {
         if (child.children === undefined) {
@@ -13,35 +13,44 @@ function getBookmarkTree(bookmarkNode) {
 }
 
 async function handleClick() {
-    let root_title = "Bookmarks Menu";
+    const deviceName = "floofy_new";
+    const rootTitle = "Linux"; // "Bookmarks Menu";
 
-    var bookmarks = [];
+
+    function setDeviceName(result) {
+        let dname = result.deviceName || 'default';
+        console.log(`Device name: ${dname}`);
+    }
+
+    function onError(error) {
+        console.log(`Error loading device name from storage: ${error}`);
+    }
+    browser.storage.local.get("deviceName").then(setDeviceName, onError);
+return;
+    let bookmarks = [];
     try {
         // returns array of nodes
-        let nodes_found = await browser.bookmarks.search({title: root_title});
-        if (nodes_found.length == 0) {
-            throw("bookmark sync root node not found");
+        const nodesFound = await browser.bookmarks.search({title: rootTitle});
+        if (nodesFound.length == 0) {
+            throw("starting title not found");
         }
 
         // uses id of first node to get the node with children
         // getSubTree returns an array with only the one node
-        let root_node = await browser.bookmarks.getSubTree(nodes_found[0].id);
+        const rootNode = await browser.bookmarks.getSubTree(nodesFound[0].id);
 
-        bookmarks = getBookmarkTree(root_node[0]);
+        bookmarks = getBookmarkTree(rootNode[0]);
     } catch (err) {
-        // TODO: change this to popup?
+        // TODO: change this to a notification
         console.error("Error retrieving bookmarks:", err);
         return;
     }
 
-    console.log(JSON.stringify(bookmarks));
+    const bookmarkJson = JSON.stringify({ deviceName: deviceName, bookmarks: bookmarks });
+    console.log(bookmarkJson);
 
-    //const request = new Request('http://www.orbitry.com/bookmarks/cgi/test.cgi', { method: 'POST' });
-    //fetch(request);
-    //fetch('http://www.orbitry.com/bookmarks/cgi/test.cgi', { method: 'POST', body: '{ "bob", "the blob" }' });
-    fetch('http://www.orbitry.com/bookmarks/cgi/test.cgi', { method: 'POST', body: JSON.stringify(bookmarks) });
-
-    //TODO: check response
+    const response = await fetch('http://www.orbitry.com/bookmarks/cgi/test.cgi', { method: 'POST', body: encodeURI(bookmarkJson) });
+    console.log("Response status: " + response.status);
 }
 
 browser.browserAction.onClicked.addListener(handleClick);
