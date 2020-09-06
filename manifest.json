@@ -11,6 +11,7 @@
   },
 
   "permissions": [
+    "notifications",
     "storage",
     "bookmarks",
     "webRequest",

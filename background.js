@@ -1,3 +1,13 @@
+function notify(message) {
+    // TODO: add red icon
+    browser.notifications.create({
+        "type": "basic",
+        "iconUrl": browser.extension.getURL("blue_arrow_48.png"),
+        "title": "Awesome Sync",
+        "message": message
+    });
+}
+
 function getBookmarkTree(bookmarkNode) {
     let bookmarks = [];
 
@@ -13,32 +23,20 @@ function getBookmarkTree(bookmarkNode) {
 }
 
 async function handleClick() {
-    const deviceName = "floofy_new";
     const rootTitle = "Linux"; // "Bookmarks Menu";
-
-
-    /*function setDeviceName(result) {
-        let dname = result.deviceName || 'default';
-        console.log(`Device name: ${dname}`);
-    }
-
-    function onError(error) {
-        console.log(`Error loading device name from storage: ${error}`);
-    }
-    browser.storage.local.get("deviceName").then(setDeviceName, onError);*/
+    let deviceName = "";
 
     try {
-        //const result = await browser.storage.local.get("deviceName");
-        //const dname = result.deviceName || 'default';
-        const dname = (await browser.storage.local.get("deviceName")).deviceName;
-        console.log(`Device N: ${dname}`);
-    } catch (err) {
-        // TODO: change this to a notification
-        console.error("Error getting settings from local storage:", err);
+        deviceName = (await browser.storage.local.get("deviceName")).deviceName || "";
+        if (deviceName == "") {
+            throw("device name is empty");
+        }
+    } catch (error) {
+        console.error("Error getting device name from local storage:", error);
+        notify(`Error: ${error}`);
         return;
     }
 
-return;
     let bookmarks = [];
     try {
         // returns array of nodes
@@ -52,17 +50,17 @@ return;
         const rootNode = await browser.bookmarks.getSubTree(nodesFound[0].id);
 
         bookmarks = getBookmarkTree(rootNode[0]);
-    } catch (err) {
-        // TODO: change this to a notification
-        console.error("Error retrieving bookmarks:", err);
+    } catch (error) {
+        console.error("Error retrieving bookmarks", error);
+        notify(`Error: ${error}`);
         return;
     }
 
     const bookmarkJson = JSON.stringify({ deviceName: deviceName, bookmarks: bookmarks });
-    console.log(bookmarkJson);
 
     const response = await fetch('http://www.orbitry.com/bookmarks/cgi/test.cgi', { method: 'POST', body: encodeURI(bookmarkJson) });
-    console.log("Response status: " + response.status);
+    response.ok ? notify("Sync successful") : notify("Sync failed");
+    console.log(`Response status: ${response.status}`);
 }
 
 browser.browserAction.onClicked.addListener(handleClick);
