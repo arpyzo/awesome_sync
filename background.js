@@ -56,9 +56,10 @@ async function handleClick() {
         return;
     }
 
-    const bookmarkJson = JSON.stringify({ deviceName: deviceName, bookmarks: bookmarks });
+    const bookmarksJson = JSON.stringify({ deviceName: deviceName, bookmarks: bookmarks });
 
-    const response = await fetch('http://www.orbitry.com/bookmarks/cgi/test.cgi', { method: 'POST', body: encodeURI(bookmarkJson) });
+    // TODO: make async
+    const response = await fetch("https://www.orbitry.com/bookmarks/api/save", { method: "POST", headers: { "Content-Type": "application/json" }, body: bookmarksJson });
     response.ok ? notify("Sync successful") : notify("Sync failed");
     console.log(`Response status: ${response.status}`);
 }
